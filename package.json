@@ -1,0 +1,23 @@
+{
+  "name": "automatizai",
+  "version": "1.0.0",
+  "description": "1. Instalar o projeto e usar o comando `npm i`\r 2. Após instalado, usar o comando `npm run dev`\r 3. Será aberto no `http://localhost:5173`",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexandremariano4/especializacao-automatizai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/alexandremariano4/especializacao-automatizai/issues"
+  },
+  "homepage": "https://github.com/alexandremariano4/especializacao-automatizai#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^25.0.10"
+  }
+}

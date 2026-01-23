@@ -22,8 +22,17 @@ npx supabase link --project-ref SEU_PROJECT_ID
 # Aplicar migrações (cria tabelas e RLS)
 npx supabase db push
 
-# Deploy das Edge Functions
+# Deploy das Edge Functions (O docker desktop tem que estar aberto)
 npx supabase functions deploy
 ```
 
 Agora acessando o supabase e indo no dashboard, no menu lateral esquerdo acesse "Table Editor", a tabella "orders" terá sido criada corretamente.
+
+
+# Instruções para instalar o playwright
+
+1. Utilize o comando `npm init playwright@latest`
+2. Escolha a opção TypeScript
+3. Deixe inicicalmente a pasta onde ficarão os testes como `tests`
+4. Não selecione que deseja um workflow github actions
+5. Marque sim para instalar os browsers do playwright
