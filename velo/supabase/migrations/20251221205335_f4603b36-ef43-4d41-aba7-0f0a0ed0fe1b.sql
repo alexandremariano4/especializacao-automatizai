@@ -1,1 +1,0 @@
-ALTER TABLE public.orders DROP COLUMN interior_color;
