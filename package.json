@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "1. Instalar o projeto e usar o comando `npm i`\r 2. Após instalado, usar o comando `npm run dev`\r 3. Será aberto no `http://localhost:5173`",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "pw:codegen": "npx playwright codegen http://localhost:5173",
+    "pw:test": "npx playwright test"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alexandremariano4/especializacao-automatizai.git"
