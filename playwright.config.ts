@@ -22,7 +22,7 @@ export default defineConfig({
   reporter: 'html',
   
   use: {
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure', // on / off / retain-on-failure / on-first-retry
     headless: true,
     
     // Tempo máximo para cada ação (click(), fill())
