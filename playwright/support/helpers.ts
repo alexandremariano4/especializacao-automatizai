@@ -1,19 +1,13 @@
-export function gerarOrderId() {
-    const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const numeros = '0123456789';
+export function generateOrderCode() {
+    const prefix = 'VLO';
 
-    const gerarLetras = (tamanho:any) =>
-        Array.from({ length: tamanho }, () =>
-            letras.charAt(Math.floor(Math.random() * letras.length))
-        ).join('');
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let randomPart = '';
 
-    const gerarNumeros = (tamanho:any) =>
-        Array.from({ length: tamanho }, () =>
-            numeros.charAt(Math.floor(Math.random() * numeros.length))
-        ).join('');
+    for (let i = 0; i < 6; i++) {
+        const randomIndex = Math.floor(Math.random() * chars.length);
+        randomPart += chars[randomIndex];
+    }
 
-    const prefixo = gerarLetras(3);
-    const sufixo = gerarLetras(3) + gerarNumeros(3);
-
-    return `${prefixo}-${sufixo}`;
+    return `${prefix}-${randomPart}`;
 }
