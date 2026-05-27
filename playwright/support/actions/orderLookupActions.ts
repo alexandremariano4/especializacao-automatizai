@@ -1,23 +1,21 @@
 import { Page, expect } from '@playwright/test'
 
-type OrderStatus = 'APROVADO' | 'REPROVADO' | 'EM_ANALISE'
+export type OrderStatus = 'APROVADO' | 'REPROVADO' | 'EM_ANALISE'
 
 export type OrderDetails = {
   number: string
   status: OrderStatus
   color: string
   wheels: string
-  customer: {
-    name: string
-    email: string
-  }
+  customer: { name: string; email: string; document: string; phone: string }
   payment: string
+  total_price: string
 }
 
 export function createOrderLookupActions(page: Page) {
 
   const orderInput = page.getByRole('textbox', { name: 'Número do Pedido' })
-  const searchButton = page.getByRole('button', { name: 'Buscar Pedido' }) 
+  const searchButton = page.getByRole('button', { name: 'Buscar Pedido' })
 
   return {
 
@@ -41,7 +39,7 @@ export function createOrderLookupActions(page: Page) {
     },
 
     async validateOrderDetails(order: OrderDetails) {
-      await expect(page.getByTestId(`order-result-${order.number}`)).toMatchAriaSnapshot(`
+      const snapshot = `
       - img
       - paragraph: Pedido
       - paragraph: ${order.number}
@@ -69,15 +67,8 @@ export function createOrderLookupActions(page: Page) {
       - heading "Pagamento" [level=4]
       - paragraph: ${order.payment}
       - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
-      `)
-    },
-
-    async validateOrderNotFound() {
-      await expect(page.locator('#root')).toMatchAriaSnapshot(`
-      - img
-      - heading "Pedido não encontrado" [level=3]
-      - paragraph: Verifique o número do pedido e tente novamente
-      `)
+      `
+      await expect(page.getByTestId(`order-result-${order.number}`)).toMatchAriaSnapshot(snapshot)
     },
 
     async validateStatusBadge(status: OrderStatus) {
@@ -105,6 +96,14 @@ export function createOrderLookupActions(page: Page) {
       await expect(statusBadge).toHaveClass(new RegExp(classes.background))
       await expect(statusBadge).toHaveClass(new RegExp(classes.text))
       await expect(statusBadge.locator('svg')).toHaveClass(new RegExp(classes.icon))
+    },
+
+    async validateOrderNotFound() {
+      await expect(page.locator('#root')).toMatchAriaSnapshot(`
+      - img
+      - heading "Pedido não encontrado" [level=3]
+      - paragraph: Verifique o número do pedido e tente novamente
+      `)
     },
   }
 }
