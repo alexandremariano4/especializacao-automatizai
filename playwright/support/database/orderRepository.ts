@@ -49,3 +49,11 @@ export async function deleteOrderByEmail(email: string) {
         return
     }
 }
+
+export async function getOrderByEmail(email: string) {
+    return db
+        .selectFrom('orders')
+        .selectAll()
+        .where('customer_email', '=', email)
+        .executeTakeFirst()
+}

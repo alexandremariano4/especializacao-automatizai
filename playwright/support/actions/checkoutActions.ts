@@ -58,11 +58,46 @@ export function createCheckoutActions(page: Page) {
             await page.getByRole('button', { name: new RegExp(method, 'i') }).click()
         },
 
+        async fillEntryValue(value: number) {
+            await page.getByTestId('input-entry-value').fill(String(value))
+        },
+
         async acceptTerms() {
             await terms.check()
         },
 
         async submit() {
+            await page.getByRole('button', { name: 'Confirmar Pedido' }).click()
+        },
+
+        async mockCreditScore(score: number) {
+            await page.route('**/functions/v1/credit-analysis', async route => {
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify({ status: 'Done', score }),
+                })
+            })
+        },
+
+        async submitCheckout(opts: {
+            customer: { name: string; lastname: string; email: string; phone: string; document: string }
+            store: string
+            paymentMethod: string
+            downPayment?: number
+        }) {
+            await page.getByTestId('checkout-name').fill(opts.customer.name)
+            await page.getByTestId('checkout-surname').fill(opts.customer.lastname)
+            await page.getByTestId('checkout-email').fill(opts.customer.email)
+            await page.getByTestId('checkout-phone').fill(opts.customer.phone)
+            await page.getByTestId('checkout-cpf').fill(opts.customer.document)
+            await page.getByTestId('checkout-store').click()
+            await page.getByRole('option', { name: opts.store }).click()
+            await page.getByRole('button', { name: new RegExp(opts.paymentMethod, 'i') }).click()
+            if (opts.downPayment !== undefined) {
+                await page.getByTestId('input-entry-value').fill(String(opts.downPayment))
+            }
+            await terms.check()
             await page.getByRole('button', { name: 'Confirmar Pedido' }).click()
         },
     }
