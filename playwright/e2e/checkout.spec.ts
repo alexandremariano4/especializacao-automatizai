@@ -139,7 +139,6 @@ test.describe('Checkout', () => {
 
             await deleteOrderByEmail(customer.email)
 
-            // Arrange
             await page.goto('/')
             await page.getByRole('link', { name: /Configure Agora/i }).click()
 
@@ -150,13 +149,11 @@ test.describe('Checkout', () => {
             await app.checkout.fillCustomerlData(customer)
             await app.checkout.selectStore(customer.store)
 
-            // Act
             await app.checkout.selectPaymentMethod(customer.paymentMethod)
             await app.checkout.expectSummaryTotal(customer.totalPrice)
             await app.checkout.acceptTerms()
             await app.checkout.submit()
 
-            // Assert
             await expect(page).toHaveURL(/\/success/)
             await expect(page.getByRole('heading', { name: 'Pedido Aprovado!' })).toBeVisible()
         })
@@ -187,7 +184,6 @@ test.describe('Checkout', () => {
                 })
             })
 
-            // Arrange
             await page.goto('/')
             await page.getByRole('link', { name: /Configure Agora/i }).click()
 
@@ -198,13 +194,10 @@ test.describe('Checkout', () => {
             await app.checkout.fillCustomerlData(customer)
             await app.checkout.selectStore(customer.store)
 
-            // Act
             await app.checkout.selectPaymentMethod(customer.paymentMethod)
-            // await app.checkout.expectSummaryTotal(customer.totalPrice)
             await app.checkout.acceptTerms()
             await app.checkout.submit()
 
-            // Assert
             await expect(page).toHaveURL(/\/success/)
             await expect(page.getByRole('heading', { name: 'Pedido Aprovado!' })).toBeVisible()
         })

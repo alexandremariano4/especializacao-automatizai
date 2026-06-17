@@ -1,6 +1,6 @@
 import { expect, test } from '../support/fixtures/fixtures'
 import { generateOrderCode } from '../support/fixtures/helpers'
-import { OrderDetails } from '../support/actions/orderLookupActions'
+import { orders } from '../support/fixtures/orders'
 
 test.describe('Consulta de Pedido', () => {
 
@@ -8,19 +8,11 @@ test.describe('Consulta de Pedido', () => {
         await app.orderLookup.open()
     })
 
-    test('deve consultar um pedido aprovado', async ({ app }) => {
+    test('deve consultar um pedido aprovado', async ({ app, seedOrder }) => {
 
-        const order: OrderDetails = {
-                    number: 'VLO-2GA8RB',
-                    status: 'APROVADO' as const,
-                    color: 'Glacier Blue',
-                    wheels: 'aero Wheels',
-                    customer: {
-                        name: 'Alexandre Mariano',
-                        email: 'alexandre_mariano@hotmail.com.br'
-                    },
-                    payment: 'À Vista'
-                }
+        const order = orders.aprovado
+
+        await seedOrder(order)
 
         await app.orderLookup.searchOrder(order.number)
 
@@ -29,19 +21,11 @@ test.describe('Consulta de Pedido', () => {
 
     })
 
-    test('deve consultar um pedido reprovado', async ({ app }) => {
+    test('deve consultar um pedido reprovado', async ({ app, seedOrder }) => {
 
-        const order: OrderDetails = {
-                    number: 'VLO-JA3NLO',
-                    status: 'REPROVADO' as const,
-                    color: 'Midnight Black',
-                    wheels: 'sport Wheels',
-                    customer: {
-                        name: 'Steve Jomba',
-                        email: 'jomba@apple.com'
-                    },
-                    payment: 'À Vista'
-                }
+        const order = orders.reprovado
+
+        await seedOrder(order)
 
         await app.orderLookup.searchOrder(order.number)
 
@@ -49,19 +33,11 @@ test.describe('Consulta de Pedido', () => {
         await app.orderLookup.validateStatusBadge(order.status)
     })
 
-    test('deve consultar um pedido em analise', async ({ app }) => {
+    test('deve consultar um pedido em analise', async ({ app, seedOrder }) => {
 
-        const order: OrderDetails = {
-                    number: 'VLO-VD2JS7',
-                    status: 'EM_ANALISE' as const,
-                    color: 'Glacier Blue',
-                    wheels: 'aero Wheels',
-                    customer: {
-                        name: 'Joao Da Silva',
-                        email: 'joao@velo.dev'
-                    },
-                    payment: 'À Vista'
-                }
+        const order = orders.emAnalise
+
+        await seedOrder(order)
 
         await app.orderLookup.searchOrder(order.number)
 
@@ -87,7 +63,7 @@ test.describe('Consulta de Pedido', () => {
 
         const button = app.orderLookup.elements.searchButton
         await expect(button).toBeDisabled()
-        
+
         await app.orderLookup.elements.orderInput.fill('   ')
         await expect(button).toBeDisabled()
     })

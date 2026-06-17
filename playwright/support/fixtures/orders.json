@@ -1,0 +1,44 @@
+{
+  "aprovado": {
+    "number": "VLO-2GA8RB",
+    "status": "APROVADO",
+    "color": "Glacier Blue",
+    "wheels": "aero Wheels",
+    "customer": {
+      "name": "Alexandre Mariano",
+      "email": "alexandre_mariano@hotmail.com.br",
+      "document": "00000014141",
+      "phone": "(11) 99999-9999"
+    },
+    "payment": "À Vista",
+    "total_price": "40000"
+  },
+  "reprovado": {
+    "number": "VLO-JA3NLO",
+    "status": "REPROVADO",
+    "color": "Midnight Black",
+    "wheels": "sport Wheels",
+    "customer": {
+      "name": "Steve Jomba",
+      "email": "jomba@apple.com",
+      "document": "00000014141",
+      "phone": "(11) 99999-9999"
+    },
+    "payment": "À Vista",
+    "total_price": "42000"
+  },
+  "emAnalise": {
+    "number": "VLO-VD2JS7",
+    "status": "EM_ANALISE",
+    "color": "Glacier Blue",
+    "wheels": "aero Wheels",
+    "customer": {
+      "name": "Joao Da Silva",
+      "email": "joao@velo.dev",
+      "document": "00000014141",
+      "phone": "(11) 99999-9999"
+    },
+    "payment": "À Vista",
+    "total_price": "40000"
+  }
+}
