@@ -8,6 +8,7 @@ node_modules/
 /playwright/.auth/
 /.playwright-mcp/
 .claude/
+**/supabase/.temp/
 
 # Secrets
 docs/db-password.txt
