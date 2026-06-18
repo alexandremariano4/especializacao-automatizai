@@ -70,4 +70,11 @@ export default defineConfig({
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
   ],  
+  webServer: {
+    command: 'npm run dev',
+    cwd: './app/velo',
+    url: 'http://localhost:5173/',
+    reuseExistingServer: !process.env.CI,
+    // timeout: 120_000,
+  }
 });

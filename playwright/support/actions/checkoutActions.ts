@@ -70,16 +70,6 @@ export function createCheckoutActions(page: Page) {
             await page.getByRole('button', { name: 'Confirmar Pedido' }).click()
         },
 
-        async mockCreditScore(score: number) {
-            await page.route('**/functions/v1/credit-analysis', async route => {
-                await route.fulfill({
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify({ status: 'Done', score }),
-                })
-            })
-        },
-
         async submitCheckout(opts: {
             customer: { name: string; lastname: string; email: string; phone: string; document: string }
             store: string

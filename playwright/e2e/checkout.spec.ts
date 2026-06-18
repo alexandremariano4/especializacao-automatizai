@@ -127,6 +127,10 @@ test.describe('Checkout', () => {
         const basePrice = 'R$ 40.000,00'
         const store = 'Velô Paulista'
 
+        test.beforeEach(async ({ app }) => {
+            await app.hero.open()
+        })
+
         test('deve criar um pedido com sucesso para pagamento à vista', async ({ app }) => {
 
             const customer = {
@@ -139,14 +143,13 @@ test.describe('Checkout', () => {
 
             await deleteOrderByEmail(customer.email)
 
-            await app.configurator.openFromLanding()
             await app.configurator.expectPrice(basePrice)
             await app.configurator.finishConfigurator()
             await app.checkout.expectLoaded()
 
             await app.checkout.submitCheckout({ customer, store, paymentMethod: 'À Vista' })
 
-            await app.success.expectApproved()
+            await app.success.expectResult('Pedido Aprovado!')
         })
 
         test('deve aprovar automaticamente o crédito quando o score do CPF for maior que 700 no financiamento', async ({ app }) => {
@@ -160,19 +163,18 @@ test.describe('Checkout', () => {
             }
 
             await deleteOrderByEmail(customer.email)
-            await app.checkout.mockCreditScore(710)
+            await app.mock.creditAnalysis(750)
 
-            await app.configurator.openFromLanding()
             await app.configurator.expectPrice(basePrice)
             await app.configurator.finishConfigurator()
             await app.checkout.expectLoaded()
 
             await app.checkout.submitCheckout({ customer, store, paymentMethod: 'Financiamento' })
 
-            await app.success.expectApproved()
+            await app.success.expectResult('Pedido Aprovado!')
         })
 
-        test('deve registrar pedido com status EM_ANALISE quando o score do CPF for entre 501 e 700 no financiamento', async ({ app }) => {
+        test('deve registrar pedido com status EM_ANALISE quando o score do CPF for entre 501 e 700 no financiamento', async ({ page, app }) => {
 
             const customer = {
                 name: 'Marty',
@@ -183,16 +185,15 @@ test.describe('Checkout', () => {
             }
 
             await deleteOrderByEmail(customer.email)
-            await app.checkout.mockCreditScore(600)
+            await app.mock.creditAnalysis(600)
 
-            await app.configurator.openFromLanding()
             await app.configurator.expectPrice(basePrice)
             await app.configurator.finishConfigurator()
             await app.checkout.expectLoaded()
 
             await app.checkout.submitCheckout({ customer, store, paymentMethod: 'Financiamento' })
 
-            await app.success.expectRedirect()
+            await expect(page).toHaveURL(/\/success/)
 
             const persisted = await getOrderByEmail(customer.email)
             expect(persisted?.status).toBe('EM_ANALISE')
@@ -209,16 +210,15 @@ test.describe('Checkout', () => {
             }
 
             await deleteOrderByEmail(customer.email)
-            await app.checkout.mockCreditScore(400)
+            await app.mock.creditAnalysis(400)
 
-            await app.configurator.openFromLanding()
             await app.configurator.expectPrice(basePrice)
             await app.configurator.finishConfigurator()
             await app.checkout.expectLoaded()
 
             await app.checkout.submitCheckout({ customer, store, paymentMethod: 'Financiamento' })
 
-            await app.success.expectRejected()
+            await app.success.expectResult('Pedido Reprovado!')
 
             const persisted = await getOrderByEmail(customer.email)
             expect(persisted?.status).toBe('REPROVADO')
@@ -235,16 +235,15 @@ test.describe('Checkout', () => {
             }
 
             await deleteOrderByEmail(customer.email)
-            await app.checkout.mockCreditScore(400)
+            await app.mock.creditAnalysis(400)
 
-            await app.configurator.openFromLanding()
             await app.configurator.expectPrice(basePrice)
             await app.configurator.finishConfigurator()
             await app.checkout.expectLoaded()
 
             await app.checkout.submitCheckout({ customer, store, paymentMethod: 'Financiamento', downPayment: 10000 })
 
-            await app.success.expectRejected()
+            await app.success.expectResult('Pedido Reprovado!')
 
             const persisted = await getOrderByEmail(customer.email)
             expect(persisted?.status).toBe('REPROVADO')
@@ -261,16 +260,15 @@ test.describe('Checkout', () => {
             }
 
             await deleteOrderByEmail(customer.email)
-            await app.checkout.mockCreditScore(400)
+            await app.mock.creditAnalysis(400)
 
-            await app.configurator.openFromLanding()
             await app.configurator.expectPrice(basePrice)
             await app.configurator.finishConfigurator()
             await app.checkout.expectLoaded()
 
             await app.checkout.submitCheckout({ customer, store, paymentMethod: 'Financiamento', downPayment: 20000 })
 
-            await app.success.expectApproved()
+            await app.success.expectResult('Pedido Aprovado!')
 
             const persisted = await getOrderByEmail(customer.email)
             expect(persisted?.status).toBe('APROVADO')
@@ -287,16 +285,15 @@ test.describe('Checkout', () => {
             }
 
             await deleteOrderByEmail(customer.email)
-            await app.checkout.mockCreditScore(400)
+            await app.mock.creditAnalysis(400)
 
-            await app.configurator.openFromLanding()
             await app.configurator.expectPrice(basePrice)
             await app.configurator.finishConfigurator()
             await app.checkout.expectLoaded()
 
             await app.checkout.submitCheckout({ customer, store, paymentMethod: 'Financiamento', downPayment: 21000 })
 
-            await app.success.expectApproved()
+            await app.success.expectResult('Pedido Aprovado!')
 
             const persisted = await getOrderByEmail(customer.email)
             expect(persisted?.status).toBe('APROVADO')

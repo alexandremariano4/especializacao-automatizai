@@ -74,7 +74,7 @@ const Success = () => {
               isApproved ? 'text-success' : 'text-destructive'
             )}
           >
-            {isApproved ? 'Pedido Aprovado!' : 'Crédito Reprovado'}
+            {isApproved ? 'Pedido Aprovado!' : 'Pedido Reprovado!'}
           </h1>
           <p className="text-muted-foreground">
             {isApproved
