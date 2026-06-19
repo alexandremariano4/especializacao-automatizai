@@ -154,11 +154,12 @@ jobs:
         run: npm install --no-audit --no-fund
 
       # Promove a preview que passou nos testes E2E para o ambiente de producao.
-      # vercel promote reusa o build, sem rebuildar. O --scope e necessario porque
-      # a CLI 48 ignora VERCEL_ORG_ID no comando promote.
+      # Usa a CLI mais recente (no Linux nao ha o bug do spawn cmd.exe), que
+      # suporta --yes para auto-confirmar o prompt de rebuild com env de prod.
       - name: Promote preview to production
         run: |
-          yes | npx vercel promote ${{ needs.build-and-deploy.outputs.preview_url }} \
+          npx vercel@latest promote ${{ needs.build-and-deploy.outputs.preview_url }} \
             --scope=automatiz-ai-alexandre \
-            --token=${{ secrets.VERCEL_TOKEN }}
+            --token=${{ secrets.VERCEL_TOKEN }} \
+            --yes
           echo "Preview promovida para producao: ${{ needs.build-and-deploy.outputs.preview_url }}"
