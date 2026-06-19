@@ -24,7 +24,7 @@ export default defineConfig({
   use: {
     trace: 'retain-on-failure', // on / off / retain-on-failure / on-first-retry
     headless: true,
-    baseURL: 'https://especializacao-automatizai.vercel.app/',
+    baseURL: 'https://especializacao-automatizai-dnnkgfghy-automatiz-ai-alexandre.vercel.app/',
     // Tempo máximo para cada ação (click(), fill())
     // Quando o valor é 0, herda o limite do timeout geral do teste
     actionTimeout: 5_000, // Padrão é 0 (sem limite)
