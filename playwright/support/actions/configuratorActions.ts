@@ -24,7 +24,9 @@ export function createConfiguratorActions(page: Page) {
 
         async expectCarImageSrc(src: string) {
             const carImage = page.locator('img[alt^="Velô Sprint"]')
-            await expect(carImage).toHaveAttribute('src', src)
+            const file = src.match(/([^/]+)\.png$/)?.[1] ?? ''
+            const pattern = new RegExp(`/(?:src/)?assets/${file}(?:-[A-Za-z0-9_]+)?\\.png$`)
+            await expect(carImage).toHaveAttribute('src', pattern)
         },
 
         async checkOptional(name: string | RegExp) {
