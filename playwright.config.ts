@@ -22,7 +22,9 @@ export default defineConfig({
   reporter: [['html', { open: 'never' }]],
   
   use: {
-    trace: 'retain-on-failure', // on / off / retain-on-failure / on-first-retry
+    // 'on' garante que o trace seja salvo mesmo em testes que passam,
+    // permitindo inspecionar ambiente/screenshots em qualquer execucao do CI.
+    trace: 'on', // on / off / retain-on-failure / on-first-retry
     headless: true,
     baseURL: process.env.BASE_URL || 'http://localhost:5173/',
     // Tempo máximo para cada ação (click(), fill())
