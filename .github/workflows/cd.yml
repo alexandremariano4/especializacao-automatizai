@@ -1,7 +1,7 @@
-# Continuous Integration: executa os testes unitarios, faz o deploy preview na
+# Continuous Deployment: executa os testes unitarios, faz o deploy preview na
 # Vercel e roda os testes E2E (Playwright) contra essa preview a cada push em main.
 
-name: Continuous Integration
+name: Continuous Deployment
 
 on:
   push:
@@ -129,3 +129,33 @@ jobs:
             test-results/
           retention-days: 7
           if-no-files-found: ignore
+
+  promote:
+    name: Promote to Production
+    needs: [e2e-tests, build-and-deploy]
+    runs-on: ubuntu-latest
+
+    # Os IDs do projeto/org sao lidos pela Vercel CLI a partir destas env vars.
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # Instala a Vercel CLI versionada como devDependency na raiz.
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      # Promove a preview que passou nos testes E2E para o ambiente de producao.
+      # vercel promote reusa o build, sem rebuildar.
+      - name: Promote preview to production
+        run: |
+          npx vercel promote ${{ needs.build-and-deploy.outputs.preview_url }} --token=${{ secrets.VERCEL_TOKEN }}
+          echo "Preview promovida para producao: ${{ needs.build-and-deploy.outputs.preview_url }}"
