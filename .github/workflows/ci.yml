@@ -90,6 +90,12 @@ jobs:
     needs: [build-and-deploy]
     runs-on: ubuntu-latest
 
+    # Usa a imagem oficial do Playwright (browsers e libs ja instalados),
+    # evitando o gargalo de "playwright install --with-deps" no runner.
+    container:
+      image: mcr.microsoft.com/playwright:v1.57.0-jammy
+      options: --user 1001
+
     # A BASE_URL aponta para a preview recem-publicada; o playwright.config.ts
     # le essa env var via process.env.BASE_URL. A DATABASE_URL e usada pela
     # camada Kysely para semear/limpar pedidos durante os testes.
@@ -101,18 +107,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       # Instala dependencias da raiz (inclui @playwright/test e a camada Kysely).
+      # O Node ja vem na imagem do Playwright (24.x).
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-
-      # Baixa os browsers do Playwright junto com as libs de sistema necessarias.
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
 
       # Executa a suite Playwright contra a preview URL exposta pelo job anterior.
       - name: Run Playwright tests
