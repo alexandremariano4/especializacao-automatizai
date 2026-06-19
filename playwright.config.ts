@@ -70,11 +70,14 @@ export default defineConfig({
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
   ],  
-  webServer: {
-    command: 'npm run dev',
-    cwd: './app/velo',
-    url: 'http://localhost:5173/',
-    reuseExistingServer: !process.env.CI,
-    // timeout: 120_000,
-  }
+  // Sobe o Vite local apenas quando BASE_URL nao foi informada.
+  // No CI o e2e roda contra a preview Vercel (BASE_URL setada), entao nao precisa de webServer.
+  webServer: process.env.BASE_URL
+    ? undefined
+    : {
+        command: 'npm run dev',
+        cwd: './app/velo',
+        url: 'http://localhost:5173/',
+        reuseExistingServer: !process.env.CI,
+      },
 });
