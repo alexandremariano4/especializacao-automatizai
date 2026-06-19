@@ -158,7 +158,7 @@ jobs:
       # a CLI 48 ignora VERCEL_ORG_ID no comando promote.
       - name: Promote preview to production
         run: |
-          npx vercel promote ${{ needs.build-and-deploy.outputs.preview_url }} \
+          yes | npx vercel promote ${{ needs.build-and-deploy.outputs.preview_url }} \
             --scope=automatiz-ai-alexandre \
             --token=${{ secrets.VERCEL_TOKEN }}
           echo "Preview promovida para producao: ${{ needs.build-and-deploy.outputs.preview_url }}"
