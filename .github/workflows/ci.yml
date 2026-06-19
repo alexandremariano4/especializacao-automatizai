@@ -1,5 +1,4 @@
-# Continuous Integration: executa os testes unitarios a cada push para a branch main.
-# Estrutura preparada para crescer (novos jobs podem ser adicionados no futuro).
+# Continuous Integration: executa os testes unitarios e o deploy preview a cada push para main.
 
 name: Continuous Integration
 
@@ -41,3 +40,38 @@ jobs:
       # Executa a suite de testes unitarios (Vitest)
       - name: Run unit tests
         run: npm run test:unit
+
+  build-and-deploy:
+    name: Build and Deploy Vercel Preview
+    needs: [unit-tests]
+    runs-on: ubuntu-latest
+
+    # Os IDs do projeto/org sao lidos pela Vercel CLI a partir destas env vars.
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # Instala a Vercel CLI versionada como devDependency na raiz.
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      # Sincroniza as configuracoes e variaveis de ambiente do projeto na Vercel.
+      - name: Pull Vercel environment
+        run: npx vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+      # Roda o build atraves da Vercel CLI (usa o buildCommand do vercel.json).
+      - name: Build Vercel
+        run: npx vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+      # Faz o deploy do artefato pre-buildado como preview.
+      - name: Deploy Preview
+        run: npx vercel deploy --prebuilt --target=preview --token=${{ secrets.VERCEL_TOKEN }}
