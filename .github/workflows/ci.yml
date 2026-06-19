@@ -1,4 +1,5 @@
-# Continuous Integration: executa os testes unitarios e o deploy preview a cada push para main.
+# Continuous Integration: executa os testes unitarios, faz o deploy preview na
+# Vercel e roda os testes E2E (Playwright) contra essa preview a cada push em main.
 
 name: Continuous Integration
 
@@ -51,6 +52,10 @@ jobs:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+    # A URL do preview e exposta para o job seguinte de E2E consumir.
+    outputs:
+      preview_url: ${{ steps.deploy.outputs.preview_url }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -72,6 +77,52 @@ jobs:
       - name: Build Vercel
         run: npx vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
-      # Faz o deploy do artefato pre-buildado como preview.
+      # Publica o artefato pre-buildado como preview e captura a URL do deploy.
       - name: Deploy Preview
-        run: npx vercel deploy --prebuilt --target=preview --token=${{ secrets.VERCEL_TOKEN }}
+        id: deploy
+        run: |
+          url=$(npx vercel deploy --prebuilt --target=preview --token=${{ secrets.VERCEL_TOKEN }})
+          echo "preview_url=$url" >> "$GITHUB_OUTPUT"
+          echo "Preview publicada em: $url"
+
+  e2e-tests:
+    name: E2E Tests (Playwright)
+    needs: [build-and-deploy]
+    runs-on: ubuntu-latest
+
+    # A BASE_URL aponta para a preview recem-publicada; o playwright.config.ts
+    # le essa env var via process.env.BASE_URL. A DATABASE_URL e usada pela
+    # camada Kysely para semear/limpar pedidos durante os testes.
+    env:
+      BASE_URL: ${{ needs.build-and-deploy.outputs.preview_url }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # Instala dependencias da raiz (inclui @playwright/test e a camada Kysely).
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      # Baixa os browsers do Playwright junto com as libs de sistema necessarias.
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      # Executa a suite Playwright contra a preview URL exposta pelo job anterior.
+      - name: Run Playwright tests
+        run: npx playwright test --project=chromium
+
+      # Em caso de falha, publica o report HTML como artefato para investigacao.
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
