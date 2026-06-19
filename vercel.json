@@ -1,6 +1,6 @@
 {
-  "installCommand": "cd app/velo && npm install",
-  "buildCommand": "cd app/velo && npm run build",
+  "installCommand": "npm install --prefix app/velo",
+  "buildCommand": "npm run build --prefix app/velo",
   "outputDirectory": "app/velo/dist",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
