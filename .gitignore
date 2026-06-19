@@ -14,3 +14,4 @@ node_modules/
 docs/db-password.txt
 .env
 .env.local
+.vercel

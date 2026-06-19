@@ -4,5 +4,10 @@
   "outputDirectory": "app/velo/dist",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled":{
+        "main": false 
+    }
+  }
 }
