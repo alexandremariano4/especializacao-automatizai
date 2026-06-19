@@ -32,9 +32,11 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      # Instala as dependencias respeitando o package-lock.json
+      # Instala as dependencias. Usa npm install (e nao npm ci) porque o Vitest 4
+      # / rolldown trazem optional native deps platform-specific (@emnapi, etc)
+      # que ficam ausentes do lock quando ele e gerado em Windows.
       - name: Install dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       # Executa a suite de testes unitarios (Vitest)
       - name: Run unit tests
