@@ -1,0 +1,41 @@
+# Continuous Integration: executa os testes unitarios a cada push para a branch main.
+# Estrutura preparada para crescer (novos jobs podem ser adicionados no futuro).
+
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  NODE_VERSION: '24'
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    # O app Vite vive em app/velo, entao todos os passos rodam a partir dessa pasta
+    defaults:
+      run:
+        working-directory: app/velo
+
+    steps:
+      # Faz o checkout do repositorio no runner
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # Configura o Node.js conforme a variavel NODE_VERSION
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # Instala as dependencias respeitando o package-lock.json
+      - name: Install dependencies
+        run: npm ci
+
+      # Executa a suite de testes unitarios (Vitest)
+      - name: Run unit tests
+        run: npm run test:unit
