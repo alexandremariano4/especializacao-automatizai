@@ -134,7 +134,13 @@ jobs:
       # Publica o relatorio do Playwright no Testdino para consulta web.
       - name: Publish Testdino Report
         if: ${{ !cancelled() }}
-        run: npx tdpw upload ./playwright-report --token=${{ secrets.TD_TOKEN }} --upload-html
+        run: |
+          npx tdpw upload ./playwright-report \
+            --token=${{ secrets.TD_TOKEN }} \
+            --upload-html \
+            --upload-traces \
+            --upload-images \
+            --upload-videos
 
   promote:
     name: Promote to Production
