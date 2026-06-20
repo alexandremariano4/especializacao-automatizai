@@ -116,11 +116,12 @@ jobs:
       - name: Run Playwright tests
         run: npx playwright test --project=chromium
 
-      # Sempre publica o relatorio HTML e os artefatos brutos (traces, screenshots,
-      # videos) gerados pelo Playwright. O trace.zip pode ser aberto em
-      # https://trace.playwright.dev para inspecionar o ambiente real do teste.
+      # Sempre que o job nao for cancelado publica o relatorio HTML e os
+      # artefatos brutos (traces, screenshots, videos) gerados pelo Playwright.
+      # O trace.zip pode ser aberto em https://trace.playwright.dev para
+      # inspecionar o ambiente real do teste.
       - name: Upload Playwright artifacts
-        if: always()
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
           name: playwright-artifacts
@@ -129,6 +130,11 @@ jobs:
             test-results/
           retention-days: 7
           if-no-files-found: ignore
+
+      # Publica o relatorio do Playwright no Testdino para consulta web.
+      - name: Publish Testdino Report
+        if: ${{ !cancelled() }}
+        run: npx tdpw upload ./playwright-report --token=${{ secrets.TD_TOKEN }} --upload-html
 
   promote:
     name: Promote to Production
