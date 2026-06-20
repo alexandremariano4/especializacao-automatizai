@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   //Tempo máximo para cada teste (30 segundo é o padrão)
-  timeout: 30_000, 
+  timeout: 30_000,
 
   // Tempo máximo para assertions (toBeVisible(), toHaveText()) 5 segundos 
   expect: {
@@ -14,13 +14,17 @@ export default defineConfig({
     */
   },
 
-  testDir: './playwright/e2e',  
+  testDir: './playwright/e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [['html', { open: 'never' }]],
-  
+  // reporter: [['html', { open: 'never' }]],
+  reporter: [
+    ['html', { outputDir: './playwright-report', open: 'never' }],
+    ['json', { outputFile: './playwright-report/report.json', open: 'never' }],
+  ],
+
   use: {
     // 'on' garante que o trace seja salvo mesmo em testes que passam,
     // permitindo inspecionar ambiente/screenshots em qualquer execucao do CI.
@@ -33,9 +37,9 @@ export default defineConfig({
 
     // Tempo máximo para navegação (goto(), waitForURL())
     // Quando o valor é 0, herda o limite do timeout geral do teste
-    navigationTimeout : 10_000 // Padrão é 0 (sem limite)
+    navigationTimeout: 10_000 // Padrão é 0 (sem limite)
   },
-  
+
   projects: [
     {
       name: 'chromium',
@@ -71,15 +75,15 @@ export default defineConfig({
     //   name: 'Google Chrome',
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
-  ],  
+  ],
   // Sobe o Vite local apenas quando BASE_URL nao foi informada.
   // No CI o e2e roda contra a preview Vercel (BASE_URL setada), entao nao precisa de webServer.
   webServer: process.env.BASE_URL
     ? undefined
     : {
-        command: 'npm run dev',
-        cwd: './app/velo',
-        url: 'http://localhost:5173/',
-        reuseExistingServer: !process.env.CI,
-      },
+      command: 'npm run dev',
+      cwd: './app/velo',
+      url: 'http://localhost:5173/',
+      reuseExistingServer: !process.env.CI,
+    },
 });
